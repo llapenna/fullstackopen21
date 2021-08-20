@@ -144,14 +144,15 @@ const App = () => {
     else
     {
       if (window.confirm(`${newPerson.name} is already in the phonebook, replace the old number?`)) {
-        const id = persons.filter(p => p.name === newPerson.name)
+        const id = persons.filter(p => p.name === newPerson.name)[0].id
+        
         personsService
           .update(id, {number: newPerson.number})
           .then(() => {
-            alert(`${newPerson.name}'s number updated successfully.`)
+            handleNotification(`${newPerson.name}'s number updated successfully.`)
             refreshPersons()
           })
-          .catch(e => alert(`Cannot update ${newPerson.name}'s number.`))
+          .catch(e => handleError(`Cannot update ${newPerson.name}'s number.`))
       }
     }
   }
