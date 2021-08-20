@@ -1,0 +1,13 @@
+.error {
+    border: .25rem red solid;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: lightsalmon;
+}
+
+.success {
+    border: .25rem green solid;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: lightgreen;
+}
