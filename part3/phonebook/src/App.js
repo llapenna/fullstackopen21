@@ -50,7 +50,7 @@ const Person = ({person, refresh, handleError, handleNotification}) => {
           refresh()
         })
         .catch(e => {
-          handleError(`${person.name} has already been deleted from server`)
+          handleError(`${person.name} has already been deleted from server`,)
           refresh()
         })
     }
@@ -65,7 +65,7 @@ const Person = ({person, refresh, handleError, handleNotification}) => {
     </tr>
   )
 }
-const Numbers = ({persons, filter, refresh, handleError, handleNotification}) => {
+const Numbers = ({persons, filter, refresh, handleNotification}) => {
 
   const filteredPersons = filter === ''
     ? persons // No filter is applied
@@ -82,7 +82,6 @@ const Numbers = ({persons, filter, refresh, handleError, handleNotification}) =>
               key={`${p.id}`} 
               person={p} 
               refresh={refresh}
-              handleError={handleError}
               handleNotification={handleNotification}
             />)}
         </tbody>
@@ -136,7 +135,8 @@ const App = () => {
           handleNotification('Phonebook entry created successfully')
         })
         .catch(e => {
-          handleError('Cannot create phonebook entry.')
+          // handleNotification('Cannot create phonebook entry.', true)
+          handleNotification(e.response.data.error, true)
         })
 
       setNewPerson({name:'', number:''}) // Clears the input
@@ -152,7 +152,10 @@ const App = () => {
             handleNotification(`${newPerson.name}'s number updated successfully.`)
             refreshPersons()
           })
-          .catch(e => handleError(`Cannot update ${newPerson.name}'s number.`))
+          .catch(e => {
+            // handleNotification(`Cannot update ${newPerson.name}'s number.`, true)
+            handleNotification(e.response.data.error, true)
+          })
       }
     }
   }
@@ -161,23 +164,17 @@ const App = () => {
     setFilter(e.target.value)
   }
 
-  const handleError = error => {
-    setNotification({message: error, error: true})
-    cleanNotification()
-  }
-  const handleNotification = notif => {
-    setNotification({message: notif, error: false})
-    cleanNotification()
-  }
-  const cleanNotification = () =>{
-    setTimeout(() => setNotification({message: '', error: false}), 5000)
+  const handleNotification = (message, error = false) => {
+    setNotification({message, error})
+    
+    setTimeout(() => setNotification({message: '', error: false}), 7000)
   }
 
   const refreshPersons = () => {
     personsService.getAll()
       .then(persons => setPersons(persons))
       .catch(e => {
-        handleError('Error while requesting all entries.')
+        handleNotification('Error while requesting all entries.', true)
       })
   }
 
@@ -197,7 +194,6 @@ const App = () => {
         filter={filter} 
         persons={persons} 
         refresh={refreshPersons} 
-        handleError={handleError}
         handleNotification={handleNotification}
       />
     </div>
