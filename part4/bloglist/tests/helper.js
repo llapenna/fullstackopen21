@@ -1,3 +1,5 @@
+const Blog = require('../models/blog')
+
 const initialBlogs = [
   {
     author: 'Arto Hellas',
@@ -19,6 +21,25 @@ const initialBlogs = [
   }
 ]
 
+const testBlog = {
+  author: 'temp author',
+  title: 'temp title',
+  url: 'https://tempauthor.com/temptitle',
+  likes: 3,
+}
+
+// Returns a valid (in formatting terms) but non existing id
+const nonExistingId = async () => {
+  const tempBlog = new Blog(testBlog)
+
+  await tempBlog.save()
+  await tempBlog.remove()
+
+  return tempBlog._id.toString()
+}
+
 module.exports = {
-  initialBlogs
+  initialBlogs,
+  testBlog,
+  nonExistingId
 }
