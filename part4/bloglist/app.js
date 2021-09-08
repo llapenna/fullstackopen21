@@ -1,5 +1,6 @@
 const config = require('./utils/config')
 const express = require('express')
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const blogsRouter = require('./controllers/blogs')
@@ -19,9 +20,12 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
 
 // Middleware
 app.use(cors())
-//app.use(express.static('build'))
+//app.use(express.static('build')) we don't have a frontend yet
 app.use(express.json())
-app.use(middleware.requestLogger)
+
+// Avoid logging in test mode
+if (process.env.NODE_ENV !== 'test')
+  app.use(middleware.requestLogger)
 
 app.use('/api/blogs', blogsRouter)
 

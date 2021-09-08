@@ -1,4 +1,4 @@
-const { totalLikes, favoriteBlog } = require('../utils/list_helper')
+const { totalLikes, favoriteBlog } = require('../utils/for_testing')
 
 describe ('Total Likes', () => {
 
@@ -144,13 +144,6 @@ describe('Favorite Blog', () => {
 
   test('More tan 1 blogs.', () => {
     const result = favoriteBlog(blogs)
-
-    console.log('Resultado', result)
-    console.log('Expected', {
-      title: blogs[2].title,
-      author: blogs[2].author,
-      likes: blogs[2].likes,
-    })
 
     expect(result).toEqual({
       title: blogs[2].title,
