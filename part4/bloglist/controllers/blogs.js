@@ -1,18 +1,33 @@
 const blogsRouter = require('express').Router()
+
+// models
 const Blog = require('../models/blog')
+const User = require('../models/user')
+
+// middleware
+const { userExtractor } = require('../utils/middleware')
 
 
 blogsRouter.get('/', async (request, response) => {
 
-  const blogs = await Blog.find({})
+  const blogs = await Blog
+    .find({})
+    .populate('user', { username: 1, name: 1 })
+
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
-  const blog = new Blog(request.body)
-  const result = await blog.save()
+blogsRouter.post('/', userExtractor, async (request, response) => {
+  const userId = request.user.id
 
-  response.status(201).json(result)
+  const user = await User.findById(userId)
+  const blog = new Blog({ ...request.body, user: userId })
+
+  const result = await blog.save()
+  user.blogs = user.blogs.concat(result.id)
+  await user.save()
+
+  response.status(201).send(result)
 })
 
 blogsRouter.get('/:id', async (req, res) => {
@@ -24,17 +39,34 @@ blogsRouter.get('/:id', async (req, res) => {
     res.status(404).end()
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
-  const id = req.params.id
+blogsRouter.delete('/:id', userExtractor, async (req, res) => {
+  const userId = req.user.id
+  const blogId = req.params.id
 
-  const result = await Blog.findByIdAndRemove(id)
+  const blog = await Blog.findById(blogId)
 
-  res.status(result ? 204 : 404).end()
+  // No blog was not found
+  if (!blog) {
+    return res.status(404).end()
+  }
+
+  // The user is the owner of the blog
+  if (blog.user.toString() === userId) {
+    await blog.remove()
+    return res.status(204).end()
+  }
+  else
+    return res.status(403).end()
 })
 
-blogsRouter.put('/:id', async (req, res) => {
+blogsRouter.put('/:id', userExtractor, async (req, res) => {
   const id = req.params.id
-  const newBlogs = req.body
+  const newBlog = req.body
+
+  const oldBlog = await Blog.findById(newBlog.id)
+
+  // // No blog was not found
+  // if (!oldBlog)
 
   const result = await Blog
     .findByIdAndUpdate(id, newBlogs, { new: true, runValidators: true })

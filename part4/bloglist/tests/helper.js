@@ -1,4 +1,5 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -21,16 +22,28 @@ const initialBlogs = [
   }
 ]
 
+const validUser = {
+  username: 'admin',
+  name: 'ADMIN',
+  passHash: '$2b$10$gQROmkmbe5BgFDs9IX/FuOTpffcYEs9YWPrfogoq9ulTKCV.WRLtK',
+  blogs: [],
+}
+
 const testBlog = {
   author: 'temp author',
   title: 'temp title',
   url: 'https://tempauthor.com/temptitle',
   likes: 3,
+  // user is added with the corresponding POST request
 }
 
 // Returns a valid (in formatting terms) but non existing id
 const nonExistingId = async () => {
   const tempBlog = new Blog(testBlog)
+
+  // We add the user to simulate a correct blog creation
+  const anyUser = await User.findOne({})
+  tempBlog.user = anyUser._id
 
   await tempBlog.save()
   await tempBlog.remove()
@@ -38,7 +51,9 @@ const nonExistingId = async () => {
   return tempBlog._id.toString()
 }
 
+
 module.exports = {
+  validUser,
   initialBlogs,
   testBlog,
   nonExistingId
