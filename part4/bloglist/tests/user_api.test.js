@@ -25,7 +25,24 @@ beforeEach(async () => {
 
 describe('Creating new user', () => {
 
+  test('Success with 201 when creating valid user', async () => {
+
+    const validUser = { username: 'admin', password: '123456' }
+
+    await api.post('/api/users')
+      .send(validUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const users = await User.find({})
+    const usernames = users.map(u => u.username)
+
+    expect(users).toHaveLength(2)
+    expect(usernames).toContain('admin')
+  })
+
   test('Invalid username length returns 400', async () => {
+
     const testUser = {
       username: 'a',
       name: 'a_user',
@@ -35,6 +52,10 @@ describe('Creating new user', () => {
 
     await api.post('/api/users').send(testUser)
       .expect(400)
+
+    const finalUsers = await User.find({})
+
+    expect(finalUsers).toHaveLength(1) // We only add one user in the beforeEach()
   })
 
   test('Inserting non unique username returns 400', async () => {
@@ -48,6 +69,10 @@ describe('Creating new user', () => {
 
     await api.post('/api/users').send(testUser)
       .expect(400)
+
+    const finalUsers = await User.find({})
+
+    expect(finalUsers).toHaveLength(1) // We only add one user in the beforeEach()
   })
 })
 

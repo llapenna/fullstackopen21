@@ -119,6 +119,21 @@ describe('Adding new blogs', () => {
     expect(titles).toContain(helper.testBlog.title)
   })
 
+  test('Likes is 0 if is not passed', async () => {
+    const token = await simulateLogin()
+
+    // We make a clone of the valid blog to delete it's likes property
+    const cloneBlog = { ...helper.testBlog }
+    delete cloneBlog.likes
+
+    const { body } =await api.post('/api/blogs')
+      .send(cloneBlog)
+      .set('Authorization', helper.bearerWith(token))
+
+    expect(body.likes).toBeDefined()
+    expect(body.likes).toBe(0)
+  })
+
   test('A user is added to the blog when creating one', async () => {
     const token = await simulateLogin()
 
