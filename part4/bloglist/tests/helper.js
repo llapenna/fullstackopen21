@@ -51,10 +51,12 @@ const nonExistingId = async () => {
   return tempBlog._id.toString()
 }
 
+const bearerWith = token => `bearer ${token}`
 
 module.exports = {
   validUser,
   initialBlogs,
   testBlog,
-  nonExistingId
+  nonExistingId,
+  bearerWith
 }

@@ -46,9 +46,8 @@ blogsRouter.delete('/:id', userExtractor, async (req, res) => {
   const blog = await Blog.findById(blogId)
 
   // No blog was not found
-  if (!blog) {
+  if (!blog)
     return res.status(404).end()
-  }
 
   // The user is the owner of the blog
   if (blog.user.toString() === userId) {
@@ -60,18 +59,24 @@ blogsRouter.delete('/:id', userExtractor, async (req, res) => {
 })
 
 blogsRouter.put('/:id', userExtractor, async (req, res) => {
-  const id = req.params.id
+  const user = req.user
+  const blogId = req.params.id
   const newBlog = req.body
 
-  const oldBlog = await Blog.findById(newBlog.id)
+  const oldBlog = await Blog.findById(blogId)
 
-  // // No blog was not found
-  // if (!oldBlog)
+  // No blog was not found
+  if (!oldBlog)
+    return res.status(404).end()
 
-  const result = await Blog
-    .findByIdAndUpdate(id, newBlogs, { new: true, runValidators: true })
-
-  res.status(201).json(result)
+  // The user is the owner of the blog
+  if (oldBlog.user.toString() === user.id) {
+    const updated = await Blog
+      .findByIdAndUpdate(blogId, newBlog, { new: true, runValidators: true })
+    return res.status(201).send(updated)
+  }
+  else
+    return res.status(403).end()
 })
 
 module.exports = blogsRouter

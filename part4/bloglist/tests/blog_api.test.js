@@ -2,6 +2,7 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const jwt = require('jsonwebtoken')
 
 // models
 const Blog = require('../models/blog')
@@ -31,14 +32,14 @@ beforeEach(async () => {
 
   // We make the user the owner of the blogs
   for (let blog of helper.initialBlogs)
-    blog.user = user._id
+    blog.user = user.id
 
   await Blog.insertMany(helper.initialBlogs)
 
   // We add the blogs to the user
   const blogs = await Blog.find({})
   for (let blog of blogs)
-    user.blogs = user.blogs.concat(blog._id.toString())
+    user.blogs = user.blogs.concat(blog.id.toString())
 
   await user.save()
 
@@ -107,7 +108,7 @@ describe('Adding new blogs', () => {
 
     await api.post('/api/blogs')
       .send(helper.testBlog)
-      .set('Authorization', `bearer ${token}`)
+      .set('Authorization', helper.bearerWith(token))
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -123,7 +124,7 @@ describe('Adding new blogs', () => {
 
     const { body: { user } } = await api.post('/api/blogs')
       .send(helper.testBlog)
-      .set('Authorization', `bearer ${token}`)
+      .set('Authorization', helper.bearerWith(token))
       .expect(201)
 
     expect(user).toBeDefined()
@@ -139,7 +140,7 @@ describe('Adding new blogs', () => {
 
     await api.post('/api/blogs')
       .send(newBlog)
-      .set('Authorization', `bearer ${token}`)
+      .set('Authorization', helper.bearerWith(token))
       .expect(400)
 
     const blogs = await Blog.find({})
@@ -162,7 +163,7 @@ describe('Deleting blogs', () => {
     const startBlogs = await Blog.find({})
 
     await api.delete(`/api/blogs/${startBlogs[0].id}`)
-      .set('Authorization', `bearer ${token}`)
+      .set('Authorization', helper.bearerWith(token))
       .expect(204)
 
     const finalBlogs = await Blog.find({})
@@ -177,7 +178,7 @@ describe('Deleting blogs', () => {
     const token = await simulateLogin()
 
     await api.delete(`/api/blogs/${blogId}`)
-      .set('Authorization', `bearer ${token}`)
+      .set('Authorization', helper.bearerWith(token))
       .expect(404)
   })
 
@@ -188,7 +189,7 @@ describe('Deleting blogs', () => {
     const blogs = await Blog.find({})
 
     await api.delete(`/api/blogs/${blogs[0].id}`)
-      .set('Authorization', `bearer ${token}`)
+      .set('Authorization', helper.bearerWith(token))
       .expect(403)
   })
 })
@@ -197,19 +198,50 @@ describe('Deleting blogs', () => {
 describe('Updating a blog', () => {
 
   test('Success with 201 when data is valid', async () => {
-    const blogs = await Blog.find({})
-    const id = blogs[0].id
+    const token = await simulateLogin()
+    const blogs = await Blog.findOne({})
+    const id = blogs.id
 
     const newBlog = helper.testBlog
 
-    await api.put(`/api/blogs/${id}`).send(newBlog)
+
+    await api.put(`/api/blogs/${id}`)
+      .send(newBlog)
+      .set('Authorization', helper.bearerWith(token))
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
     const updatedBlog = await Blog.findById(id)
     const processedUpdated = JSON.parse(JSON.stringify(updatedBlog))
 
-    expect(processedUpdated).toEqual({ ...newBlog, id })
+    const user = jwt.verify(token, process.env.JWT_SECRET)
+
+    expect(processedUpdated).toEqual({ ...newBlog, id, user: user.id })
+  })
+
+  test('Fail with 404 when id is not valid', async () => {
+    const token = await simulateLogin()
+    const newBlog = { title: 'Testing update', likes: '10' }
+
+    const invalidId = await helper.nonExistingId()
+
+    await api.put(`/api/blogs/${invalidId}`)
+      .send(newBlog)
+      .set('Authorization', helper.bearerWith(token))
+      .expect(404)
+  })
+
+  test('Fail with 403 when user is not the owner', async () => {
+    const token = await simulateLogin({ username: 'nonadmin', password: '123456' })
+    const newBlog = { title: 'Testing update', likes: '10' }
+
+    // We use any blog
+    const oldBlog = await Blog.findOne({})
+
+    await api.put(`/api/blogs/${oldBlog.id}`)
+      .send(newBlog)
+      .set('Authorization', helper.bearerWith(token))
+      .expect(403)
   })
 })
 
