@@ -1,5 +1,3 @@
-
-import { useEffect } from 'react'
 import '../styles/notification.css'
 
 const Notification = ({message}) => {

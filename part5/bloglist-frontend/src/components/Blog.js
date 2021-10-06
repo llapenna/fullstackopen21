@@ -5,13 +5,12 @@ import React, { useState } from 'react'
 import '../styles/blog.css'
 
 
-const Blog = ({blog, update}) => {
+const Blog = ({blog, update, remove}) => {
 
   const [open, setOpen] = useState(false)
 
-  const handleLike = () => {
-    //update({...blog, likes: blog.likes + 1})
-    update({
+  const handleLike = async() => {
+    await update({
       id: blog.id,
       author: blog.author,
       title: blog.title,
@@ -20,11 +19,17 @@ const Blog = ({blog, update}) => {
     })
   }
 
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete ${blog.title}?`))
+      await remove(blog)
+  }
+
   const description = () => (
     <div>
       <p>author: {blog.author}</p>
       <p>url: {blog.url}</p>
       <p>likes: {blog.likes} <button onClick={handleLike}>like</button></p>
+      <button onClick={handleDelete}>remove</button>
     </div>
   )
 

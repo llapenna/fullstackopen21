@@ -64,6 +64,18 @@ const App = () => {
       handleNotification(`Can't update ${newBlog.title}: ${e.message}`, true)
     }
   }
+  const deleteBlog = async blog => {
+    try {
+      await blogService.remove(blog.id)
+
+      const updatedBlogs = await blogService.getAll();
+      setBlogs(updatedBlogs);
+
+      handleNotification(`Blog ${blog.title} by ${blog.author} deleted`)
+    } catch (e) {
+      handleNotification(`Can't delete ${blog.title}: ${e.message}`, true)
+    }
+  }
 
   const handleNotification = (text, error = false) => {
     setNotif({text, status: error ? 'error' : 'success'})
@@ -101,7 +113,7 @@ const App = () => {
 
           <br />
 
-          { blogs.map(b => <Blog key={b.id} blog={b} update={updateBlog} /> )}
+          { blogs.map(b => <Blog key={b.id} blog={b} update={updateBlog} remove={deleteBlog} /> )}
         </div>
       : <Login setUser={setUser} handleNotification={handleNotification}/>
       }
