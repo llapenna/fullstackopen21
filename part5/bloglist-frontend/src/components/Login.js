@@ -24,7 +24,7 @@ const Login = ({setUser, handleNotification}) => {
       window.localStorage.setItem('user', JSON.stringify(user))
       console.log('Logged user: ', user)
     } catch (e) {
-      handleNotification({message: 'Wrong credentials', status: 'error'})
+      handleNotification('Wrong credentials', true)
     }
     
   }

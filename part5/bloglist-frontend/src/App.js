@@ -18,9 +18,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notif, setNotif] = useState(null)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
   const blogFormRef = useRef()
 
 
@@ -46,17 +43,26 @@ const App = () => {
       setBlogs(blogs.concat(returnedBlog))
       blogFormRef.current.toggle()
 
-      handleNotification(`A new blog ${newBlog.title} by ${newBlog.author} added `)
+      handleNotification(`A new blog ${newBlog.title} by ${newBlog.author} added`)
     }
     catch (e) {
-      handleNotification(`Can't add ${newBlog.title} to the list: ${e.message}`, 'error')
+      handleNotification(`Can't add ${newBlog.title} to the list: ${e.message}`, true)
     }
-    
-    
-    // blogService.create(newBlog)
-    //   .then(returnedBlog => {
-    //     setBlogs(blogs.concat(returnedBlog))
-    //   })
+  }
+
+  const updateBlog = async newBlog => {
+    try {
+      await blogService.update(newBlog)
+      // const otherBlogs = blogs.filter(({id}) => id !== newBlog.id)      
+      // setBlogs([...otherBlogs, returnedBlog])
+
+      const updatedBlogs = await blogService.getAll();
+      setBlogs(updatedBlogs);
+
+      handleNotification(`Blog ${newBlog.title} by ${newBlog.author} updated`)
+    } catch (e) {
+      handleNotification(`Can't update ${newBlog.title}: ${e.message}`, true)
+    }
   }
 
   const handleNotification = (text, error = false) => {
@@ -95,7 +101,7 @@ const App = () => {
 
           <br />
 
-          { blogs.map(b => <Blog key={b.id} blog={b} /> )}
+          { blogs.map(b => <Blog key={b.id} blog={b} update={updateBlog} /> )}
         </div>
       : <Login setUser={setUser} handleNotification={handleNotification}/>
       }
