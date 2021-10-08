@@ -26,10 +26,10 @@ const Blog = ({ blog, update, remove }) => {
   }
 
   const description = () => (
-    <div className='blog-description'>
+    <div className='blog-description' style={{ display: open ? '' : 'none' }}>
       <p>author: {blog.author}</p>
       <p>url: {blog.url}</p>
-      <p>likes: {blog.likes} <button onClick={handleLike}>like</button></p>
+      <p>likes: {blog.likes} <button className='like-button' onClick={handleLike}>like</button></p>
       <button onClick={handleDelete}>remove</button>
     </div>
   )
@@ -38,7 +38,7 @@ const Blog = ({ blog, update, remove }) => {
     <div className='blog'>
       {blog.title}
       <button onClick={() => setOpen(!open)}>{open ? 'hide' : 'show'}</button>
-      { open && description() }
+      { description() }
     </div>
   )
 }
