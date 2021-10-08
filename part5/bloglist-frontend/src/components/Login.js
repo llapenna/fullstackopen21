@@ -1,23 +1,23 @@
 // core
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 // services
 import loginService from '../services/login'
 import blogService from '../services/blogs'
 
-const Login = ({setUser, handleNotification}) => {
+const Login = ({ setUser, handleNotification }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleChangeUsername = ({target}) => setUsername(target.value)
-  const handleChangePassword = ({target}) => setPassword(target.value)
+  const handleChangeUsername = ({ target }) => setUsername(target.value)
+  const handleChangePassword = ({ target }) => setPassword(target.value)
 
   const handleSubmit = async event => {
     event.preventDefault()
 
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
 
       setUser(user)
       blogService.setToken(user.token)
@@ -26,7 +26,6 @@ const Login = ({setUser, handleNotification}) => {
     } catch (e) {
       handleNotification('Wrong credentials', true)
     }
-    
   }
 
   return (

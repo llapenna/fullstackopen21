@@ -1,11 +1,12 @@
 // core
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
 // styles
 import '../styles/blog.css'
 
 
-const Blog = ({blog, update, remove}) => {
+const Blog = ({ blog, update, remove }) => {
 
   const [open, setOpen] = useState(false)
 
@@ -25,7 +26,7 @@ const Blog = ({blog, update, remove}) => {
   }
 
   const description = () => (
-    <div>
+    <div className='blog-description'>
       <p>author: {blog.author}</p>
       <p>url: {blog.url}</p>
       <p>likes: {blog.likes} <button onClick={handleLike}>like</button></p>
@@ -38,8 +39,14 @@ const Blog = ({blog, update, remove}) => {
       {blog.title}
       <button onClick={() => setOpen(!open)}>{open ? 'hide' : 'show'}</button>
       { open && description() }
-    </div> 
+    </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  update: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired
 }
 
 export default Blog

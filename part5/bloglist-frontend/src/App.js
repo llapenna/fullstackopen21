@@ -23,7 +23,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll()
-      .then(newBlogs => setBlogs(newBlogs))   
+      .then(newBlogs => setBlogs(newBlogs))
   }, [])
 
   useEffect(() => {
@@ -53,11 +53,11 @@ const App = () => {
   const updateBlog = async newBlog => {
     try {
       await blogService.update(newBlog)
-      // const otherBlogs = blogs.filter(({id}) => id !== newBlog.id)      
+      // const otherBlogs = blogs.filter(({id}) => id !== newBlog.id)
       // setBlogs([...otherBlogs, returnedBlog])
 
-      const updatedBlogs = await blogService.getAll();
-      setBlogs(updatedBlogs);
+      const updatedBlogs = await blogService.getAll()
+      setBlogs(updatedBlogs)
 
       handleNotification(`Blog ${newBlog.title} by ${newBlog.author} updated`)
     } catch (e) {
@@ -68,8 +68,8 @@ const App = () => {
     try {
       await blogService.remove(blog.id)
 
-      const updatedBlogs = await blogService.getAll();
-      setBlogs(updatedBlogs);
+      const updatedBlogs = await blogService.getAll()
+      setBlogs(updatedBlogs)
 
       handleNotification(`Blog ${blog.title} by ${blog.author} deleted`)
     } catch (e) {
@@ -78,7 +78,7 @@ const App = () => {
   }
 
   const handleNotification = (text, error = false) => {
-    setNotif({text, status: error ? 'error' : 'success'})
+    setNotif({ text, status: error ? 'error' : 'success' })
 
     setTimeout(() => setNotif(null), 5000)
   }
@@ -93,14 +93,14 @@ const App = () => {
     setUser(null)
     window.localStorage.removeItem('user')
   }
-  
+
   return (
     <div>
       <h2>blogs</h2>
       <Notification message={notif}/>
 
       { user
-      ? 
+        ?
         <div>
           <div>
             {`User ${user.name} logged in`}
@@ -115,7 +115,7 @@ const App = () => {
 
           { blogs.map(b => <Blog key={b.id} blog={b} update={updateBlog} remove={deleteBlog} /> )}
         </div>
-      : <Login setUser={setUser} handleNotification={handleNotification}/>
+        : <Login setUser={setUser} handleNotification={handleNotification}/>
       }
     </div>
   )
