@@ -91,18 +91,46 @@ describe('Blog app', function() {
         cy.createBlog(blog)
       })
 
-      it('Increasing like counter', function() {
-        // We make visible the like button
-        cy.get('.toggle-blog').click()
+      describe('Changing likes', function() {
 
-        // Expect to have 0 likes (as we haven't provided any likes when creating it)
-        cy.get('.like-counter').should('contain', '0')
-        cy.get('.like-button').click()
-        // Expect to have 1 like
-        cy.get('.like-counter').should('contain', '1')
+        it('Increasing like counter', function() {
+          // We make visible the like button
+          cy.get('.toggle-blog').click()
+
+          // Expect to have 0 likes (as we haven't provided any likes when creating it)
+          cy.get('.like-counter').should('contain', '0')
+          cy.get('.like-button').click()
+          // Expect to have 1 like
+          cy.get('.like-counter').should('contain', '1')
+        })
+
+        it('The blogs are ordered by likes in a descendant way', function() {
+          const anotherBlog = {
+            title: 'Most liked test',
+            author: 'Myselft',
+            url: 'http://localhost:3000'
+          }
+          cy.createBlog(anotherBlog)
+
+          // Expect to have the 2 blogs created
+          cy.get('.blog').should('have.length', 2)
+          // Expect the first one listed to be the first we created
+          cy.get('.blog').first().contains(blog.title)
+
+          // Now we have to like the 2nd blog, as both of them have 0 likes
+          cy.get('.blog').next().within(function() {
+            // We open the 2nd blog
+            cy.get('.toggle-blog').click()
+            cy.get('.like-button').click()
+          })
+
+          // Now we expect to see the 'anotherBlog' as the first in the list
+          cy.get('.blog').first().should('contain', anotherBlog.title)
+        })
       })
 
-      describe.only('Deleting a blog', function() {
+
+      describe('Deleting a blog', function() {
 
         it('The owner deletes their blog', function() {
           // We make visible the remove button
