@@ -33,10 +33,10 @@ const Login = ({ setUser, handleNotification }) => {
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          username <input value={username} onChange={handleChangeUsername} />
+          username <input id='username' value={username} onChange={handleChangeUsername} />
         </div>
         <div>
-          password <input value={password} onChange={handleChangePassword} type='password'/>
+          password <input id='password' value={password} onChange={handleChangePassword} type='password'/>
         </div>
         <button type='submit'>Login</button>
       </form>

@@ -6,67 +6,74 @@ import { render, fireEvent } from '@testing-library/react'
 // component
 import Blog from './Blog'
 
-
-const blog = {
-  title: 'Blog testing',
-  author: 'Luciano',
-  link: 'https://localhost',
-  likes: 0,
-}
-
-test('Renders title but not the description', () => {
+describe('<Blog />', () => {
+  let component
 
   const update = jest.fn()
   const remove = jest.fn()
 
-  const component = render(
-    <Blog blog={blog} update={update} remove={remove} />
-  )
-  const descriptionDiv = component.container.querySelector('.blog-description')
+  const blog = {
+    title: 'Blog testing',
+    author: 'Luciano',
+    link: 'https://localhost',
+    likes: 0,
+  }
 
-  // Title visible
-  expect(component.container).toHaveTextContent(blog.title)
+  beforeEach(() => {
+    component = render(
+      <Blog blog={blog} update={update} remove={remove} />
+    )
+  })
 
-  // Description (author, link and likes) hidden
-  expect(descriptionDiv).toHaveStyle('display: none')
-})
+  test('Renders title but not the description', () => {
+    const descriptionDiv = component.container.querySelector('.blog-description')
 
-test('Clicking "show" button makes the description visible', () => {
+    // Title visible
+    expect(component.container).toHaveTextContent(blog.title)
 
-  const update = jest.fn()
-  const remove = jest.fn()
+    // Description (author, link and likes) hidden
+    expect(descriptionDiv).toHaveStyle('display: none')
+  })
 
-  const component = render(
-    <Blog blog={blog} update={update} remove={remove} />
-  )
-  const button = component.container.querySelector('button')
-  const descriptionDiv = component.container.querySelector('.blog-description')
+  test('Clicking "show" button makes the description visible', () => {
 
-  // button shows the description when pressed
-  expect(button).toHaveTextContent('show')
+    const update = jest.fn()
+    const remove = jest.fn()
 
-  fireEvent.click(button)
+    const component = render(
+      <Blog blog={blog} update={update} remove={remove} />
+    )
+    const button = component.container.querySelector('button')
+    const descriptionDiv = component.container.querySelector('.blog-description')
 
-  // We expect to have the description rendered
-  expect(descriptionDiv).not.toHaveStyle('display: none')
-  // and the button text changed
-  expect(button).toHaveTextContent('hide')
-})
+    // button shows the description when pressed
+    expect(button).toHaveTextContent('show')
 
-test('Clicking "like" button twice calls the event handler twice', () => {
-  const update = jest.fn()
-  const remove = jest.fn()
+    fireEvent.click(button)
 
-  const component = render(
-    <Blog blog={blog} update={update} remove={remove} />
-  )
-  const button = component.container.querySelector('.like-button')
+    // We expect to have the description rendered
+    expect(descriptionDiv).not.toHaveStyle('display: none')
+    // and the button text changed
+    expect(button).toHaveTextContent('hide')
+  })
 
-  expect(button).toHaveTextContent('like')
 
-  // Clicked twice
-  fireEvent.click(button)
-  fireEvent.click(button)
+  test('Clicking "like" button twice calls the event handler twice', () => {
+    const update = jest.fn()
+    const remove = jest.fn()
 
-  expect(update.mock.calls).toHaveLength(2)
+    const component = render(
+      <Blog blog={blog} update={update} remove={remove} />
+    )
+    const button = component.container.querySelector('.like-button')
+
+    expect(button).toHaveTextContent('like')
+
+    // Clicked twice
+    fireEvent.click(button)
+    fireEvent.click(button)
+
+    expect(update.mock.calls).toHaveLength(2)
+  })
+
 })
