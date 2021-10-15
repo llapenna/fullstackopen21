@@ -2,8 +2,10 @@ const initial = null
 
 const reducer = (state = initial, action) => {
   switch (action.type) {
-    case 'SET':
+    case 'SET_NOTIFICATION':
       return action.data
+    case 'RESET':
+      return initial
     default:
       return state
   }
@@ -11,15 +13,14 @@ const reducer = (state = initial, action) => {
 
 export const setNotification = message => {
   return {
-    type: 'SET',
+    type: 'SET_NOTIFICATION',
     data: message
   }
 }
 
 export const hideNotification = () => {
   return {
-    type: 'SET',
-    data: null
+    type: 'RESET',
   }
 }
 
