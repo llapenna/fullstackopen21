@@ -8,21 +8,15 @@ import AnecdoteList from './components/AnecdoteList'
 import AnecdoteFilter from './components/AnecdoteFilter'
 import Notification from './components/Notification'
 
-// services
-import anecdoteService from './services/anecdotes'
-
 // reducers
 import { initializeAnecdotes } from './reducers/anecdoteReducer'
 
 
 const App = () => {
-
   const dispatch = useDispatch()
 
   useEffect(() => {
-    anecdoteService
-      .getAll()
-      .then(anecdotes => dispatch(initializeAnecdotes(anecdotes)))
+    dispatch(initializeAnecdotes())
   })
 
   return (
