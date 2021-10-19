@@ -1,9 +1,16 @@
-const initial = null
+const initial = {
+  message: null,
+  id: null
+}
 
 const reducer = (state = initial, action) => {
   switch (action.type) {
     case 'SET_NOTIFICATION':
-      return action.data
+      if (state.id !== null )
+        clearTimeout(state.id)
+      return { message: action.data.message }
+    case 'SET_NOTIFICATION_ID':
+      return { ...state, id: action.data.id}  
     case 'RESET_NOTIFICATION':
       return initial
     default:
@@ -15,11 +22,15 @@ const reducer = (state = initial, action) => {
 export const setNotification = (message, time) => {
   return async dispatch => {
     dispatch({
-      type:'SET_NOTIFICATION',
-      data: message
+      type: 'SET_NOTIFICATION',
+      data: { message }
     })
 
-    setTimeout(() => dispatch({ type: 'RESET_NOTIFICATION'}), time * 1000)
+    const id = setTimeout(() => dispatch({ type: 'RESET_NOTIFICATION'}), time * 1000)
+    dispatch({
+      type: 'SET_NOTIFICATION_ID',
+      data: { id }
+    })
   }
 }
 

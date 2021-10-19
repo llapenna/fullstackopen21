@@ -10,11 +10,11 @@ const Notification = props => {
     borderWidth: 1
   }
   return (
-    props.notification === null
+    props.notification.message === null
     ? null
     :
     <div style={style}>
-      {props.notification}
+      {props.notification.message}
     </div>
   )
 }
