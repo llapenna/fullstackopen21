@@ -3,14 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 // reducers
 import { voteAnecdote } from "../reducers/anecdoteReducer"
-import { setNotification, hideNotification } from "../reducers/notificationReducer"
-
-const AnecdoteFilter = () => {
-  return (
-    <div>
-    </div>
-  )
-}
+import { setNotification } from "../reducers/notificationReducer"
 
 const Anecdote = ({anecdote, handleVote}) => {
 
