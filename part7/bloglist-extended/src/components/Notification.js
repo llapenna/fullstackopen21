@@ -1,7 +1,9 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import '../styles/notification.css'
 
-const Notification = ({ message }) => {
+const Notification = () => {
+  const message = useSelector(store => store.notification)
 
   return (
     message !== null

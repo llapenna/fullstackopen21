@@ -11,14 +11,19 @@ import BlogForm from './components/BlogForm'
 import Blog from './components/Blog'
 
 import Togglable from './components/Togglable'
+import { useDispatch } from 'react-redux'
+
+// reducers
+import { setNotification } from './reducers/notificationReducer'
 
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notif, setNotif] = useState(null)
 
   const blogFormRef = useRef()
+
+  const dispatch = useDispatch()
 
 
   useEffect(() => {
@@ -78,9 +83,7 @@ const App = () => {
   }
 
   const handleNotification = (text, error = false) => {
-    setNotif({ text, status: error ? 'error' : 'success' })
-
-    setTimeout(() => setNotif(null), 5000)
+    dispatch(setNotification({ text, status: error ? 'error' : 'success' }, 5))
   }
 
   const blogForm = () => (
@@ -97,7 +100,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notif}/>
+      <Notification/>
 
       { user
         ?
