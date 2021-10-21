@@ -1,0 +1,14 @@
+.error {
+  border: .25rem red solid;
+  background-color: lightsalmon;
+}
+
+.success {
+  border: .25rem green solid;
+  background-color: lightgreen;
+}
+
+.notification {
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
