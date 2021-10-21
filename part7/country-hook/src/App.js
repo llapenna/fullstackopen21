@@ -1,5 +1,8 @@
+// core
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+
+// services
+import countriesService from './services/countries'
 
 const useField = (type) => {
   const [value, setValue] = useState('')
@@ -18,7 +21,24 @@ const useField = (type) => {
 const useCountry = (name) => {
   const [country, setCountry] = useState(null)
 
-  useEffect(() => {})
+  useEffect(() => {
+    if (name !== '') {
+      countriesService
+        .get(name)
+        .then(c => setCountry({
+          name: c.name.common,
+          capital: c.capital[0],
+          population: c.population,
+          flag: c.flags.png,
+          found: true
+        }))
+        .catch(e => {
+          setCountry({ found: false })
+        })
+    } else {
+      setCountry(null)
+    }
+  }, [name])
 
   return country
 }
@@ -38,10 +58,10 @@ const Country = ({ country }) => {
 
   return (
     <div>
-      <h3>{country.data.name} </h3>
-      <div>capital {country.data.capital} </div>
-      <div>population {country.data.population}</div> 
-      <img src={country.data.flag} height='100' alt={`flag of ${country.data.name}`}/>  
+      <h3>{country.name} </h3>
+      <div>capital {country.capital} </div>
+      <div>population {country.population}</div> 
+      <img src={country.flag} height='100' alt={`flag of ${country.name}`}/>  
     </div>
   )
 }
